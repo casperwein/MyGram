@@ -1,23 +1,6 @@
 const User = require("../models/index").user;
-const generateToken = require("../middlware/authentication").generateToken;
+const generateToken = require("../middleware/authentication").generateToken;
 const bcrypt = require("bcrypt");
-
-exports.getAll = async(req, res) => {
-    await User.findAll()
-        .then((result) => {
-            res.status(200).json({
-                msg: "DATA",
-                data: result,
-            });
-        })
-        .catch((e) => {
-            console.log(e);
-            res.status(503).json({
-                msg: "INTERNAL SERVER ERROR",
-                data: result,
-            });
-        });
-};
 
 exports.signUp = async(req, res) => {
     const full_name = req.body.full_name;
@@ -62,24 +45,14 @@ exports.signUp = async(req, res) => {
                 };
                 const token = generateToken(data);
                 res.status(201).send({
-                    status: "SUKSES",
                     token: token,
-                    user: data,
                 });
             })
-            .catch((e) => {
-                console.log(e);
-                if ((e.name = "SequelizeDatabaseError")) {
-                    res.status(401).json({
-                        message: "PLEASE INPUT VALID DATA",
-                        error: e,
-                    });
-                } else {
-                    res.status(503).json({
-                        message: "INTERNAL SERVER ERROR",
-                        error: e,
-                    });
-                }
+            .catch((error) => {
+                res.status(503).json({
+                    message: "INTERNAL SERVER ERROR",
+                    error: error,
+                });
             });
     });
 };
@@ -88,22 +61,23 @@ exports.signIn = async(req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
-    User.findOne({
-        where: {
-            email: email,
-        },
-    }).then((user) => {
-        if (!user) {
-            res.status(401).json({
-                msg: "email not found",
-            });
-        }
-        const passwordValid = bcrypt.compareSync(password, user.password);
-        if (!passwordValid) {
-            res.status(401).json({
-                msg: "password and email not match",
-            });
-        } else {
+    await User.findOne({
+            where: {
+                email: email,
+            },
+        })
+        .then((user) => {
+            if (!user) {
+                return res.status(401).json({
+                    message: "email not found",
+                });
+            }
+            const passwordValid = bcrypt.compareSync(password, user.password);
+            if (!passwordValid) {
+                return res.status(401).json({
+                    message: "password and email not match",
+                });
+            }
             const data = {
                 id: user.id,
                 email: user.email,
@@ -114,11 +88,16 @@ exports.signIn = async(req, res) => {
                 phone_number: user.phone_number,
             };
             const token = generateToken(data);
-            res.status(201).send({
+            res.status(200).send({
                 token: token,
             });
-        }
-    });
+        })
+        .catch((error) => {
+            res.status(503).json({
+                message: "INTERNAL SERVER ERROR",
+                error: error,
+            });
+        });
 };
 
 exports.updateUser = async(req, res) => {
@@ -142,36 +121,31 @@ exports.updateUser = async(req, res) => {
             where: { id },
             returning: true,
         })
-        .then((userUpdate) => {
-            if (!userUpdate) {
-                res.status(402).json({
-                    user: "id not found",
-                });
-            }
+        .then(() => {
             res.status(200).json({
-                user: userUpdate.rows,
+                user: dataUser,
             });
         })
-        .catch((e) => {
+        .catch((error) => {
             res.status(503).json({
-                msg: "INTERNAL SERVER ERROR",
+                message: "INTERNAL SERVER ERROR",
+                error: error,
             });
         });
 };
 
-exports.deleteUser = (req, res) => {
+exports.deleteUser = async(req, res) => {
     const id = req.params.id;
-    User.destroy({ where: { id } })
+    await User.destroy({ where: { id } })
         .then(() => {
             res.status(200).json({
                 message: "Your account has been succesfully deleted",
             });
         })
-        .catch((e) => {
-            console.log(e);
+        .catch((error) => {
             res.status(503).json({
                 message: "INTERNAL SERVER ERROR",
-                error: e,
+                error: error,
             });
         });
 };

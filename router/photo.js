@@ -1,15 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const photoController = require("../controller/photoController");
-const authentication = require("../middlware/authentication").verify;
-const autorization =
-    require("../middlware/authorization").userAutorizationPhotoController;
+const authentication = require("../middleware/authentication").verify;
+const authorization = require("../middleware/authorization").photoAuthorization;
+const { photoValidation } = require("../middleware/validation");
 
 router.use(authentication);
 
-router.post("/post", photoController.postPhoto);
+router.post("/", photoValidation.postAndUpdatePhoto, photoController.postPhoto);
 router.get("/", photoController.getAllPhotos);
-router.put("/update/:id", autorization, photoController.updatePhoto);
-router.delete("/delete/:id", autorization, photoController.deletePhoto);
+router.put("/:photoId", authorization, photoController.updatePhoto);
+router.delete("/:photoId", authorization, photoController.deletePhoto);
 
 module.exports = router;
