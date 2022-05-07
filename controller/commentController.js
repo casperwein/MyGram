@@ -25,7 +25,6 @@ exports.getAllComment = async(req, res) => {
             });
         })
         .catch((error) => {
-            console.log(error);
             res.status(503).json({
                 message: "INTERNAL SERVER ERROR",
                 error: error,
@@ -40,7 +39,7 @@ exports.postComment = async(req, res) => {
 
     await Photo.findOne({ where: { id: photo_id } }).then((photos) => {
         if (!photos) {
-            res.status(401).json({
+            return res.status(401).json({
                 message: `photo with id ${photo_id} not found`,
             });
         }
@@ -79,7 +78,6 @@ exports.updateComments = async(req, res) => {
             });
         })
         .catch((error) => {
-            console.log(error);
             res.status(503).json({
                 message: "INTERNAL SERVER ERROR",
                 error: error,
@@ -89,17 +87,16 @@ exports.updateComments = async(req, res) => {
 
 exports.deleteComments = async(req, res) => {
     const commentId = req.params.commentId;
-    await Comment.destroy({ where: { id: commentId } }).then(() => {
-        res
-            .status(200)
-            .json({
+    await Comment.destroy({ where: { id: commentId } })
+        .then(() => {
+            res.status(200).json({
                 message: "Your comments has been succesfully deleted",
-            })
-            .catch((error) => {
-                res.status(503).json({
-                    message: "INTERNAL SERVER ERROR",
-                    error: error,
-                });
             });
-    });
+        })
+        .catch((error) => {
+            res.status(503).json({
+                message: "INTERNAL SERVER ERROR",
+                error: error,
+            });
+        });
 };
