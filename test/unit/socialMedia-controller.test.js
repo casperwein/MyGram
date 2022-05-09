@@ -19,8 +19,8 @@ describe("Social Media getAllSocialMedias Testing", () => {
         expect(res.statusCode).toBe(200);
     });
 
-    it("getAll socialmedia should return 200 ", async() => {
-        const rejected = Promise.reject({ message: "can't sign in" });
+    it("getAll socialmedia should return 503 ", async() => {
+        const rejected = Promise.reject({ message: "error" });
         SocialMedia.findAll.mockResolvedValue(rejected);
         await socialMediaController.getAllSocialMedias(req, res);
         expect(res.statusCode).toBe(503);
@@ -28,14 +28,14 @@ describe("Social Media getAllSocialMedias Testing", () => {
 });
 
 describe("Social Media postSocialMedia Testing", () => {
-    it("getAll socialmedia should return 200 ", async() => {
+    it("post socialmedia should return 200 ", async() => {
         SocialMedia.create.mockResolvedValue({ socialmedia: "intagram" });
         await socialMediaController.postSocialMedia(req, res);
         expect(res.statusCode).toBe(201);
     });
 
-    it("getAll socialmedia should return 200 ", async() => {
-        const rejected = Promise.reject({ message: "can't sign in" });
+    it("post socialmedia should return 503 ", async() => {
+        const rejected = Promise.reject({ message: "error" });
         SocialMedia.create.mockResolvedValue(rejected);
         await socialMediaController.postSocialMedia(req, res);
         expect(res.statusCode).toBe(503);
@@ -43,14 +43,14 @@ describe("Social Media postSocialMedia Testing", () => {
 });
 
 describe("Social Media updateSocialMedias Testing", () => {
-    it("getAll socialmedia should return 200 ", async() => {
+    it("update socialmedia should return 200 ", async() => {
         SocialMedia.update.mockResolvedValue({ socialmedia: "intagram" });
         await socialMediaController.updateSocialMedias(req, res);
         expect(res.statusCode).toBe(200);
     });
 
-    it("getAll socialmedia should return 200 ", async() => {
-        const rejected = Promise.reject({ message: "can't sign in" });
+    it("update socialmedia should return 503 ", async() => {
+        const rejected = Promise.reject({ message: "error" });
         SocialMedia.update.mockResolvedValue(rejected);
         await socialMediaController.updateSocialMedias(req, res);
         expect(res.statusCode).toBe(503);
@@ -58,14 +58,14 @@ describe("Social Media updateSocialMedias Testing", () => {
 });
 
 describe("Social Media deleteSocialMedia Testing", () => {
-    it("getAll socialmedia should return 200 ", async() => {
+    it("delete socialmedia should return 200 ", async() => {
         SocialMedia.destroy.mockResolvedValue({ socialmedia: "intagram" });
         await socialMediaController.deleteSocialMedia(req, res);
         expect(res.statusCode).toBe(200);
     });
 
-    it("getAll socialmedia should return 200 ", async() => {
-        const rejected = Promise.reject({ message: "can't sign in" });
+    it("delete socialmedia should return 503 ", async() => {
+        const rejected = Promise.reject({ message: "error" });
         SocialMedia.destroy.mockResolvedValue(rejected);
         await socialMediaController.deleteSocialMedia(req, res);
         expect(res.statusCode).toBe(503);
