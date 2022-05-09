@@ -1,8 +1,6 @@
 const User = require("../models/index").user;
 const generateToken = require("../middlware/authentication").generateToken;
-
 const bcrypt = require("bcrypt");
-const user = require("../models/user");
 
 exports.getAll = async(req, res) => {
     await User.findAll()
@@ -140,21 +138,40 @@ exports.updateUser = async(req, res) => {
         phone_number: phone_number,
     };
 
-    return User.update(dataUser, { where: { id: id } })
+    await User.update(dataUser, {
+            where: { id },
+            returning: true,
+        })
         .then((userUpdate) => {
-            if (!user.length) {
+            if (!userUpdate) {
                 res.status(402).json({
                     user: "id not found",
                 });
             }
             res.status(200).json({
-                msg: "UPDATE SUCCES",
-                user: userUpdate,
+                user: userUpdate.rows,
             });
         })
         .catch((e) => {
             res.status(503).json({
                 msg: "INTERNAL SERVER ERROR",
+            });
+        });
+};
+
+exports.deleteUser = (req, res) => {
+    const id = req.params.id;
+    User.destroy({ where: { id } })
+        .then(() => {
+            res.status(200).json({
+                message: "Your account has been succesfully deleted",
+            });
+        })
+        .catch((e) => {
+            console.log(e);
+            res.status(503).json({
+                message: "INTERNAL SERVER ERROR",
+                error: e,
             });
         });
 };
