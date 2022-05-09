@@ -1,18 +1,33 @@
 const Comment = require("../models/index").comment;
 const Photo = require("../models/index").photo;
+const User = require("../models/index").user;
 
 exports.getAllComment = async(req, res) => {
     const user_id = req.id;
 
-    await Comment.findAll({ where: { user_id } })
+    await Comment.findAll({
+            where: { user_id },
+            include: [{
+                    model: Photo,
+                    as: "photos",
+                    attributes: ["id", "title", "caption", "poster_image_url"],
+                },
+                {
+                    model: User,
+                    as: "user",
+                    attributes: ["id", "username", "profile_image_url", "phone_number"],
+                },
+            ],
+        })
         .then((comments) => {
             res.status(200).json({
                 comments: comments,
             });
         })
         .catch((error) => {
+            console.log(error);
             res.status(503).json({
-                msg: "INTERNAL SERVER ERROR",
+                message: "INTERNAL SERVER ERROR",
                 error: error,
             });
         });
@@ -26,7 +41,7 @@ exports.postComment = async(req, res) => {
     await Photo.findOne({ where: { id: photo_id } }).then((photos) => {
         if (!photos) {
             res.status(401).json({
-                msg: `photo with id ${photo_id} not found`,
+                message: `photo with id ${photo_id} not found`,
             });
         }
         return Comment.create({
@@ -36,13 +51,12 @@ exports.postComment = async(req, res) => {
             })
             .then((result) => {
                 res.status(200).json({
-                    msg: "comment succes",
-                    result: result,
+                    comment: result,
                 });
             })
             .catch((err) => {
                 res.status(503).json({
-                    msg: "internal server error",
+                    message: "internal server error",
                     result: err,
                 });
             });
@@ -50,13 +64,13 @@ exports.postComment = async(req, res) => {
 };
 
 exports.updateComments = async(req, res) => {
-    const id = req.params.id;
+    const commentId = req.params.commentId;
     const comment = req.body.comment;
     const dataComment = {
         comment: comment,
     };
     await Comment.update(dataComment, {
-            where: { id },
+            where: { id: commentId },
             returning: true,
         })
         .then((comments) => {
@@ -67,15 +81,15 @@ exports.updateComments = async(req, res) => {
         .catch((error) => {
             console.log(error);
             res.status(503).json({
-                msg: "INTERNAL SERVER ERROR",
+                message: "INTERNAL SERVER ERROR",
                 error: error,
             });
         });
 };
 
 exports.deleteComments = async(req, res) => {
-    const id = req.params.id;
-    await Comment.destroy({ where: { id } }).then((comments) => {
+    const commentId = req.params.commentId;
+    await Comment.destroy({ where: { id: commentId } }).then(() => {
         res
             .status(200)
             .json({

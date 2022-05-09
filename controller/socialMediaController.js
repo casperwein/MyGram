@@ -1,7 +1,16 @@
 const SocialMedia = require("../models/index").socialmedia;
+const User = require("../models/index").user;
 
 exports.getAllSocialMedias = async(req, res) => {
-    SocialMedia.findAll()
+    const user_id = req.id;
+    await SocialMedia.findAll({
+            where: { user_id },
+            include: [{
+                model: User,
+                as: "user",
+                attributes: ["id", "username", "profile_image_url"],
+            }, ],
+        })
         .then((socialmedias) => {
             res.status(200).json({
                 socialmedias,
@@ -39,7 +48,7 @@ exports.postSocialMedia = async(req, res) => {
 };
 
 exports.updateSocialMedias = async(req, res) => {
-    const id = req.params.id;
+    const socialMediaId = req.params.socialMediaId;
     const name = req.body.name;
     const social_media_url = req.body.social_media_url;
     const dataSocialMedias = {
@@ -47,7 +56,7 @@ exports.updateSocialMedias = async(req, res) => {
         social_media_url: social_media_url,
     };
     await SocialMedia.update(dataSocialMedias, {
-            where: { id: id },
+            where: { id: socialMediaId },
             returning: true,
         })
         .then((socialmedias) => {
@@ -64,9 +73,9 @@ exports.updateSocialMedias = async(req, res) => {
 };
 
 exports.deleteSocialMedia = async(req, res) => {
-    const id = req.params.id;
-    await SocialMedia.destroy({ where: { id } })
-        .then((socialmedias) => {
+    const socialMediaId = req.params.socialMediaId;
+    await SocialMedia.destroy({ where: { id: socialMediaId } })
+        .then(() => {
             res.status(200).json({
                 message: "Your socialmedia has been succesfully deleted",
             });
