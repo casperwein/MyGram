@@ -101,7 +101,7 @@ exports.signIn = async(req, res) => {
 };
 
 exports.updateUser = async(req, res) => {
-    const id = req.params.id;
+    const userId = req.params.userId;
     const full_name = req.body.full_name;
     const email = req.body.email;
     const username = req.body.username;
@@ -118,7 +118,7 @@ exports.updateUser = async(req, res) => {
     };
 
     await User.update(dataUser, {
-            where: { id },
+            where: { id: userId },
             returning: true,
         })
         .then(() => {
@@ -135,8 +135,8 @@ exports.updateUser = async(req, res) => {
 };
 
 exports.deleteUser = async(req, res) => {
-    const id = req.params.id;
-    await User.destroy({ where: { id } })
+    const userId = req.params.userId;
+    await User.destroy({ where: { id: userId } })
         .then(() => {
             res.status(200).json({
                 message: "Your account has been succesfully deleted",

@@ -3,11 +3,7 @@ const Comment = require("../models/index").comment;
 const User = require("../models/index").user;
 
 exports.getAllPhotos = async(req, res) => {
-    const user_id = req.id;
     await Photo.findAll({
-            where: {
-                user_id: user_id,
-            },
             include: [{
                     model: Comment,
                     as: "comments",
@@ -31,7 +27,6 @@ exports.getAllPhotos = async(req, res) => {
             });
         })
         .catch((error) => {
-            console.log(error);
             res.status(503).json({
                 msg: "INTERNAL SERVER ERROR",
                 error: error,
@@ -61,7 +56,6 @@ exports.postPhoto = async(req, res) => {
             });
         })
         .catch((e) => {
-            console.log(e);
             res.status(503).json({
                 message: "INTERNAL SERVER ERROR",
                 error: e,
@@ -89,7 +83,6 @@ exports.updatePhoto = async(req, res) => {
             });
         })
         .catch((e) => {
-            console.log(e);
             res.status(503).json({
                 msg: "INTERNAL SERVER ERROR",
             });
@@ -105,7 +98,6 @@ exports.deletePhoto = async(req, res) => {
             });
         })
         .catch((error) => {
-            console.log(error);
             res.status(503).json({
                 message: "INTERNAL SERVER ERROR",
                 error: error,
