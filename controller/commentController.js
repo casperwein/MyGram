@@ -3,10 +3,7 @@ const Photo = require("../models/index").photo;
 const User = require("../models/index").user;
 
 exports.getAllComment = async(req, res) => {
-    const user_id = req.id;
-
     await Comment.findAll({
-            where: { user_id },
             include: [{
                     model: Photo,
                     as: "photos",

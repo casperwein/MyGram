@@ -8,14 +8,14 @@ const { userValidation } = require("../middleware/validation");
 router.post("/register", userValidation.userSignUp, userController.signUp);
 router.post("/login", userValidation.userSignIn, userController.signIn);
 router.put(
-    "/update/:id",
+    "/update/:userId",
     authenctication,
     authorization,
     userValidation.userUpdate,
     userController.updateUser
 );
 router.delete(
-    "/delete/:id",
+    "/delete/:userId",
     authenctication,
     authorization,
     userController.deleteUser
