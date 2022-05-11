@@ -18,7 +18,7 @@ app.use("/photos", photoRouter);
 app.use("/comments", commentRouter);
 app.use("/socialmedias", socialmediaRouter);
 
-app.listen(port, function() {
+app.listen(port, () => {
     console.log(
         "Express server listening on port %d in %s mode",
         this.address().port,
