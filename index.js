@@ -3,6 +3,7 @@ dontev.config();
 
 const express = require("express");
 const app = express();
+
 const userRouter = require("./router/user");
 const photoRouter = require("./router/photo");
 const commentRouter = require("./router/comment");
@@ -18,10 +19,4 @@ app.use("/photos", photoRouter);
 app.use("/comments", commentRouter);
 app.use("/socialmedias", socialmediaRouter);
 
-app.listen(port, function() {
-    console.log(
-        "Express server listening on port %d in %s mode",
-        this.address().port,
-        app.settings.env
-    );
-});
+app.listen(port);
