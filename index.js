@@ -19,4 +19,4 @@ app.use("/photos", photoRouter);
 app.use("/comments", commentRouter);
 app.use("/socialmedias", socialmediaRouter);
 
-app.listen(port);
+// app.listen(port);
