@@ -13,7 +13,9 @@ const port = process.env.PORT || 9490;
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-
+app.use("/", (req, res) => {
+    res.status(200).send("Welcome to myGram App");
+});
 app.use("/users", userRouter);
 app.use("/photos", photoRouter);
 app.use("/comments", commentRouter);
