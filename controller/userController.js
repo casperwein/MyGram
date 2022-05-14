@@ -103,7 +103,6 @@ exports.signIn = async(req, res) => {
         })
         .catch((error) => {
             console.log(error);
-
             res.status(503).json({
                 message: "INTERNAL SERVER ERROR",
                 error: error,
