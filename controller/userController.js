@@ -12,49 +12,58 @@ exports.signUp = async(req, res) => {
     const phone_number = req.body.phone_number;
 
     User.findOne({
-        where: {
-            email: email,
-            username: username,
-        },
-    }).then((user) => {
-        if (user) {
-            return res.status(400).send({
-                message: "Email or username already Exist",
-            });
-        }
-        const salt = bcrypt.genSaltSync(10);
-        const hash = bcrypt.hashSync(password, salt);
-        User.create({
-                full_name: full_name,
+            where: {
                 email: email,
                 username: username,
-                password: hash,
-                profile_image_url: profile_image_url,
-                age: age,
-                phone_number: phone_number,
-            })
-            .then((user) => {
-                const data = {
-                    id: user.id,
-                    email: email,
+            },
+        })
+        .then((user) => {
+            if (user) {
+                return res.status(400).send({
+                    message: "Email or username already Exist",
+                });
+            }
+            const salt = bcrypt.genSaltSync(10);
+            const hash = bcrypt.hashSync(password, salt);
+            User.create({
                     full_name: full_name,
+                    email: email,
                     username: username,
+                    password: hash,
                     profile_image_url: profile_image_url,
                     age: age,
                     phone_number: phone_number,
-                };
-                const token = generateToken(data);
-                res.status(201).send({
-                    token: token,
+                })
+                .then((user) => {
+                    const data = {
+                        id: user.id,
+                        email: email,
+                        full_name: full_name,
+                        username: username,
+                        profile_image_url: profile_image_url,
+                        age: age,
+                        phone_number: phone_number,
+                    };
+                    const token = generateToken(data);
+                    res.status(201).send({
+                        token: token,
+                    });
+                })
+                .catch((error) => {
+                    console.log(error);
+                    res.status(503).json({
+                        message: "INTERNAL SERVER ERROR",
+                        error: error,
+                    });
                 });
-            })
-            .catch((error) => {
-                res.status(503).json({
-                    message: "INTERNAL SERVER ERROR",
-                    error: error,
-                });
+        })
+        .catch((error) => {
+            console.log(error);
+            res.status(503).json({
+                message: "INTERNAL SERVER ERROR",
+                error: error,
             });
-    });
+        });
 };
 
 exports.signIn = async(req, res) => {
@@ -93,6 +102,8 @@ exports.signIn = async(req, res) => {
             });
         })
         .catch((error) => {
+            console.log(error);
+
             res.status(503).json({
                 message: "INTERNAL SERVER ERROR",
                 error: error,
